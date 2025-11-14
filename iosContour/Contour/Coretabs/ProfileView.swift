@@ -1,8 +1,11 @@
+// ProfileView.swift
+
 import SwiftUI
+import UIKit // 1. Import UIKit to be able to use UIImage
 
-// --- Placeholder Helper Views (Kept in this file for simplicity) ---
-
+// --- Placeholder Helper Views (Unchanged) ---
 struct EditProfileView: View {
+    // ... (Your existing EditProfileView code is unchanged) ...
     @State private var newUsername: String = "ExampleUser"
     @State private var newBio: String = "A simple bio about me."
     @Environment(\.dismiss) var dismiss
@@ -59,20 +62,19 @@ struct EditProfileView: View {
         }
     }
 }
-
-// --- Main Profile View ---
+// --- Main Profile View (MODIFIED) ---
 struct ProfileView: View {
     @State private var username: String = "ExampleUser"
     @State private var bio: String = "Designing and building the future, one scan at a time. Tech enthusiast and creator."
     @State private var showingEditProfile = false
     
-    // Placeholder views needed for compilation
- 
-
+    // 2. ADD THIS: This @State variable will hold the shared image
+    @State private var mostRecentImage: UIImage?
+    
     var body: some View {
-        // Removed the outer NavigationView since it's now wrapped by NavigationStack in MainTabView
         VStack(alignment: .leading, spacing: 25) {
 
+            // ... (Your existing Profile Header and Edit Button are unchanged) ...
             // Profile Header: Picture, Username, and Bio
             HStack(alignment: .top) {
                 // Circular Profile Picture Placeholder (Top Left)
@@ -122,8 +124,9 @@ struct ProfileView: View {
 
             // Navigation Links
             VStack(spacing: 15) {
-                // Button 1: Camera Scanning Link
-                NavigationLink(destination: CreateScanView()) {
+                
+                // 3. MODIFY THIS: Pass the binding to CreateScanView
+                NavigationLink(destination: CreateScanView(mostRecentImage: $mostRecentImage)) {
                     HStack {
                         Image(systemName: "camera.viewfinder").foregroundColor(.contourPurple)
                         Text("Create Your Scan")
@@ -136,8 +139,8 @@ struct ProfileView: View {
                 .cornerRadius(10)
                 .foregroundColor(.primary)
 
-                // Button 2: 3D Model View Link (Now pointing to ModelView)
-                NavigationLink(destination: ModelView()) {
+                // 4. MODIFY THIS: Pass the binding to ModelView
+                NavigationLink(destination: ModelView(mostRecentImage: $mostRecentImage)) {
                     HStack {
                         Image(systemName: "cube.transparent").foregroundColor(.contourBlue)
                         Text("Your 3D Model")
@@ -163,7 +166,6 @@ struct ProfileView: View {
 
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
-        // Wrap in a NavigationStack for accurate preview
         NavigationStack {
             ProfileView()
         }

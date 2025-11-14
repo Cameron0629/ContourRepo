@@ -1,7 +1,17 @@
+// CreateScanView.swift
+
 import SwiftUI
+import UIKit // 1. Import UIKit
 
 /// The view where the user initiates a new 3D scan using the device camera.
 struct CreateScanView: View {
+    
+    // 2. ADD THIS: Receive the image binding from ProfileView
+    @Binding var mostRecentImage: UIImage?
+    
+    // 3. ADD THIS: State to control showing the camera
+    @State private var isShowingCamera = false
+    
     var body: some View {
         VStack(spacing: 20) {
             
@@ -10,36 +20,42 @@ struct CreateScanView: View {
                 .fontWeight(.bold)
                 .padding(.top)
 
-            // Placeholder for the Camera Viewfinder
-            // In a real app, this would be replaced by a UIViewControllerRepresentable
-            // hosting the actual camera session.
+            // 4. MODIFY THIS: This ZStack now shows the image if it exists
             ZStack {
-                Rectangle()
-                    .fill(Color.black)
-                    .aspectRatio(3/4, contentMode: .fit) // Typical phone aspect ratio
-                    .cornerRadius(15)
+                if let image = mostRecentImage {
+                    // Show the image they just took
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(3/4, contentMode: .fit)
+                        .cornerRadius(15)
+                } else {
+                    // Show the placeholder if no image is set yet
+                    Rectangle()
+                        .fill(Color.black)
+                        .aspectRatio(3/4, contentMode: .fit)
+                        .cornerRadius(15)
+                    
+                    Image(systemName: "video.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 60)
+                        .foregroundColor(Color.gray.opacity(0.8))
+                }
                 
-                // Overlay for the scanning frame
+                // Overlay for the scanning frame (can stay)
                 RoundedRectangle(cornerRadius: 15)
                     .stroke(Color.green, lineWidth: 4)
                     .frame(width: 250, height: 350)
-                
-                Image(systemName: "video.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 60)
-                    .foregroundColor(Color.gray.opacity(0.8))
             }
             .padding(.horizontal)
             
             Spacer()
             
-            // Start Scanning Button
+            // 5. MODIFY THIS: The button now opens the camera
             Button {
-                // TODO: Implement the camera setup and start scan logic here
-                print("Starting 3D Scan...")
+                isShowingCamera = true // This will open the sheet
             } label: {
-                Text("Start Scanning")
+                Text(mostRecentImage == nil ? "Start Scanning" : "Take New Photo")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -51,13 +67,18 @@ struct CreateScanView: View {
             .padding(.bottom, 20)
         }
         .navigationTitle("New Scan")
+        // 6. ADD THIS: This sheet presents the ImagePicker
+        .sheet(isPresented: $isShowingCamera) {
+            ImagePicker(image: $mostRecentImage)
+        }
     }
 }
 
 struct CreateScanView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            CreateScanView()
+            // 7. MODIFY THIS: Update preview to work with the binding
+            CreateScanView(mostRecentImage: .constant(nil))
         }
     }
 }
