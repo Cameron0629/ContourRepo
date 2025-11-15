@@ -13,11 +13,13 @@ struct MainTabView: View {
 
         var iconName: String {
             switch self {
-            case .profile: return "person.crop.circle"
+            
             case .dashboard: return "house.fill"
-            case .settings: return "gear"
-            case .wardrobe: return "hanger"
             case .browseClothing: return "tshirt.fill"
+            case .wardrobe: return "hanger"
+            case .profile: return "person.crop.circle"
+            case .settings: return "gear"
+            
             }
         }
         
